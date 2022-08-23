@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0.180392, 0.180392, 0.180392, 1 )
+
+[node name="Stone" type="Spatial"]
+transform = Transform( 0.2, 0, 0, 0, 0.4, 0, 0, 0, 0.2, 0, 0, 0 )
+
+[node name="CSGCylinder" type="CSGCylinder" parent="."]
+material = SubResource( 1 )
