@@ -3,8 +3,10 @@ extends Node
 export var websocket_url = "ws://localhost:8080"
 
 var client = WebSocketClient.new();
+var msgHandler = MessageHandler.new(client);
 
 func _ready():
+	
 	# Connect base signals to get notified of connection open, close, and errors.
 	client.connect("connection_closed", self, "_closed")
 	client.connect("connection_error", self, "_closed")
@@ -19,11 +21,6 @@ func _ready():
 	if err != OK:
 		 print("Unable to connect")
 		 set_process(false)
-	
-	var msg = Message.new("test", {});
-	print(msg.toJSON(), msg.toString());
-	var lambda = test();
-	print(typeof(lambda));
 
 func _closed(was_clean = false):
 	# was_clean will tell you if the disconnection was correctly notified
@@ -32,16 +29,11 @@ func _closed(was_clean = false):
 	set_process(false)
 
 func _connected(proto = ""):
-		# This is called on connection, "proto" will be the selected WebSocket
-	# sub-protocol (which is optional)
-	print("Connected with protocol: ", proto)
-	# You MUST always use get_peer(1).put_packet to send data to server,
-	# and not put_packet directly when not using the MultiplayerAPI.
-	client.get_peer(1).put_packet("Test packet".to_utf8())
-
+	print("Connected to the server...");
+	
 func _on_data():
 	var msg = Message.parse(client.get_peer(1).get_packet().get_string_from_utf8());
-	print("Received: ", msg.type, msg.data);
+	msgHandler.handle(msg);
 
 func _process(_delta):
 	# Call this in _process or _physics_process. Data transfer, and signals
@@ -72,12 +64,16 @@ class Message:
 		return Message.new(o.type, o.data);
 
 class MessageHandler:
-	var handlers = {}; # type -> Function
+	var handlers = {}; # type -> func
 
 	var client: WebSocketClient;
 
 	func _init(_client):
 		client = _client;
+		_registerHandlers();
+
+	func _registerHandlers():
+		self.registerHandler("handshake", "_handShake");
 
 	func defaultHandler(msg):
 		print("Unhandled message: ", msg.type);
@@ -85,13 +81,21 @@ class MessageHandler:
 	# func registerHandler(_type: String, _func: Function):
 	# 	handlers[_type] = _func;
 
-	func handle(_msg):
-		if _msg.type in handlers:
-			# var f: Function = handlers[_msg.type];
-			# f(_msg);
+	func handle(msg):
+		print("Received: ", msg.type, msg.data);		
+		if msg.type in handlers:
+			call(handlers[msg.type]);
 			pass;
 		else:
-			defaultHandler(_msg);
+			defaultHandler(msg);
+			
+	func registerHandler(type, handler):
+		handlers[type] = handler;
 
-func test():
-	pass;
+	func _handShake():
+		# playerIndex
+		# roomId
+		# version
+		
+		# TODO: Verify the version, and then proceed to ask for the map
+		pass
