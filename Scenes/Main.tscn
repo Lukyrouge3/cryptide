@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scripts/Map.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/MainScreen.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/Socket.gd" type="Script" id=3]
 
 [sub_resource type="ProceduralSky" id=1]
@@ -12,6 +13,8 @@ background_sky = SubResource( 1 )
 ambient_light_color = Color( 1, 1, 1, 1 )
 
 [node name="Main" type="Spatial"]
+
+[node name="Control" parent="." instance=ExtResource( 2 )]
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.382296, 0.92404, 0, -0.92404, 0.382296, 3.3233, 6.59122, 7.72806 )
@@ -27,3 +30,5 @@ light_energy = 0.413
 
 [node name="Socket" type="Node" parent="."]
 script = ExtResource( 3 )
+
+[connection signal="createRoom" from="Control" to="Socket" method="_on_Control_createRoom"]

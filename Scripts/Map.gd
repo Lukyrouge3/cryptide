@@ -121,6 +121,6 @@ func _onTileMouseExit(_tile: Node):
 
 func _input(event):
 	if event is InputEventMouseButton:
-		print("Mouse clicked at", event.position);
+		#print("Mouse clicked at", event.position);
 		if hoveredTile != null:
 			print("Clicked tile is", hoveredTile);

@@ -41,7 +41,7 @@ func _process(_delta):
 	client.poll()
 
 func send(msg):
-	client.get_peer(1).put_packet(msg.toString());
+	client.get_peer(1).put_packet(msg.toString().to_utf8());
 	print("Sent: ", msg.type);
 
 class Message:
@@ -99,3 +99,7 @@ class MessageHandler:
 		
 		# TODO: Verify the version, and then proceed to ask for the map
 		pass
+
+
+func _on_Control_createRoom():
+	send(Message.new("createRoom", {}));
